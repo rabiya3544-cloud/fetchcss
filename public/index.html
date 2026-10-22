@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="color-scheme" content="dark light" />
+<title>Stylesheet Link Extractor</title>
+<link href="csFetcher.css" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <svg class="logo" viewBox="0 0 28 28" width="28" height="28"
+       aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="logo-fill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2b3243"/>
+        <stop offset="1" stop-color="#181d27"/>
+      </linearGradient>
+      <linearGradient id="logo-rim" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0"    stop-color="rgba(255,255,255,0.20)"/>
+        <stop offset="0.5"  stop-color="rgba(255,255,255,0)"/>
+        <stop offset="0.85" stop-color="rgba(0,0,0,0)"/>
+        <stop offset="1"    stop-color="rgba(0,0,0,0.45)"/>
+      </linearGradient>
+    </defs>
+
+    <!-- chip body -->
+    <rect x="0.5" y="0.5" width="27" height="27" rx="7"
+          fill="url(#logo-fill)" stroke="#2c3342"/>
+
+    <!-- bevel: light on top, dark at bottom -->
+    <rect x="1.5" y="1.5" width="25" height="25" rx="6"
+          fill="none" stroke="url(#logo-rim)" stroke-width="1"/>
+
+    <!-- left brace { -->
+    <path d="M11 8 q-2 0 -2 2 v2 q0 2 -2 2 q2 0 2 2 v2 q0 2 2 2"
+          fill="none" stroke="#e7eaf0" stroke-width="1.6"
+          stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- right brace } -->
+    <path d="M17 8 q2 0 2 2 v2 q0 2 2 2 q-2 0 -2 2 v2 q0 2 -2 2"
+          fill="none" stroke="#e7eaf0" stroke-width="1.6"
+          stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- center dot -->
+    <circle cx="14" cy="14" r="1.3" fill="#e7eaf0"/>
+  </svg>
+
+  <div class="title-row">
+    <h1>CSS Fetcher</h1>
+  </div>
+  <span class="tag"></span>
+<button id="themeBtn" class="icon-btn" aria-label="Toggle Theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="5"></circle>
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+  </svg>
+</button>
+</header>
+
+  <main>
+    <nav class="tabs" role="tablist" aria-label="Fetch mode">
+      <button role="tab" data-mode="single" aria-selected="true">Single</button>
+      <button role="tab" data-mode="multi" aria-selected="false">Multi</button>
+      <button role="tab" data-mode="scrape" aria-selected="false">Scrape</button>
+      <button role="tab" data-mode="bundle" aria-selected="false">Bundle</button>
+    </nav>
+
+    <section class="panel" data-panel="single">
+      <div class="baserow">
+        <label for="single-url">CSS URL</label>
+        <input id="single-url" type="url" inputmode="url" autocomplete="off"
+               spellcheck="false" placeholder="https://cdn.example.com/main.css" />
+        <label for="single-name">Filename <span class="hint">(optional)</span></label>
+        <input id="single-name" type="text" autocomplete="off"
+               spellcheck="false" placeholder="auto from URL" />
+      </div>
+
+      <div class="section-divider" role="separator">HTML → CSS URLs</div>
+
+      <div id="extractor" class="baserow">
+        <div class="toolbar">
+          <button id="btn-paste" type="button">Paste</button>
+          <button id="btn-convert" type="button" class="primary">Convert</button>
+          <button id="btn-copy" type="button">Copy</button>
+        </div>
+        <label for="base" title="Base URL used to resolve relative hrefs">Base</label>
+        <input id="base" type="url" inputmode="url" spellcheck="false" autocomplete="off"
+               autocapitalize="off" placeholder="https://example.com/app/" />
+<textarea id="io" readonly spellcheck="false" autocomplete="off" autocapitalize="off" placeholder='Paste HTML with &lt;link rel="stylesheet" href="...">&nbsp;then tap Convert'></textarea>
+        <div class="send-to" id="send-to">
+          <span class="send-to-label">Send to</span>
+          <button type="button" class="chip" data-target="single" disabled>Single</button>
+          <button type="button" class="chip" data-target="multi" disabled>Multi</button>
+          <button type="button" class="chip" data-target="bundle" disabled>Bundle</button>
+        </div>
+
+        <div id="extractor-status" class="status" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="multi" hidden>
+      <div class="baserow">
+        <label for="multi-urls">CSS URLs <span class="hint">(one per line)</span></label>
+        <textarea id="multi-urls" spellcheck="false" autocapitalize="off"
+                  placeholder="https://a.com/reset.css&#10;https://b.com/theme.css"></textarea>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="scrape" hidden>
+      <div class="baserow">
+        <label for="scrape-urls">Page URLs <span class="hint">(one per line)</span></label>
+        <textarea id="scrape-urls" spellcheck="false" autocapitalize="off"
+                  placeholder="https://example.com&#10;https://other.com"></textarea>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="bundle" hidden>
+      <div class="baserow">
+        <label for="bundle-urls">CSS URLs <span class="hint">(one per line · downloads assets too)</span></label>
+        <textarea id="bundle-urls" spellcheck="false" autocapitalize="off"
+                  placeholder="https://github.githubassets.com/assets/github-0b4a3ee3d18dc2f0.css&#10;https://cdn.example.com/main.css"></textarea>
+      </div>
+
+      <details class="adv">
+        <summary>Advanced options</summary>
+        <div class="adv-body">
+          <label class="check">
+            <input id="opt-recursive" type="checkbox" checked />
+            <span>Follow <code>@import</code> recursively</span>
+          </label>
+          <div class="row">
+            <div>
+              <label for="opt-maxDepth">Max depth</label>
+              <input id="opt-maxDepth" type="number" min="0" max="20" inputmode="numeric" placeholder="5" />
+            </div>
+            <div>
+              <label for="opt-maxAssets">Max assets</label>
+              <input id="opt-maxAssets" type="number" min="1" inputmode="numeric" placeholder="300" />
+            </div>
+            <div>
+              <label for="opt-maxBytes">Max MB</label>
+              <input id="opt-maxBytes" type="number" min="1" inputmode="numeric" placeholder="20" />
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <div class="actions">
+      <button id="fetch-btn" class="btn" type="button">Fetch</button>
+      <button id="download-btn" class="btn btn-secondary" type="button" disabled>Download</button>
+    </div>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+  </main>
+
+  <footer>
+    <span id="status-footer" aria-live="polite">Ready</span>
+    <span id="count"></span>
+    <span class="badge" id="api-badge">/api/fetch-css</span>
+  </footer>
+
+
+<script>
+(function () {
+  'use strict';
+
+  const ORIGIN = 'https://fetchcss.vercel.app';
+  const ENDPOINTS = {
+    single: ORIGIN + '/api/fetch-css',
+    multi:  ORIGIN + '/api/fetch-css',
+    scrape: ORIGIN + '/api/fetch-css',
+    bundle: ORIGIN + '/api/fetch-css-bundle',
+  };
+  const BADGE = {
+    single: '/api/fetch-css',
+    multi:  '/api/fetch-css',
+    scrape: '/api/fetch-css',
+    bundle: '/api/fetch-css-bundle',
+  };
+
+  const tabs        = document.querySelectorAll('.tabs button');
+  const panels      = document.querySelectorAll('.panel');
+  const fetchBtn    = document.getElementById('fetch-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const statusEl    = document.getElementById('status');
+  const badgeEl     = document.getElementById('api-badge');
+  const FETCH_LABEL = fetchBtn.textContent;
+
+  let mode = 'single';
+
+  /* Last successful fetch result, kept in memory until replaced. */
+  let lastBlob     = null;
+  let lastFilename = '';
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => (
+      { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+    ));
+  }
+
+  function fmtBytes(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+    return (n / 1048576).toFixed(2) + ' MB';
+  }
+
+  function setStatus(kind, html) {
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+    statusEl.innerHTML = html || '';
+  }
+
+  /* Store the fetched blob for later download. Does NOT trigger a save. */
+  function storeBlob(blob, name) {
+    lastBlob = blob;
+    lastFilename = name;
+    downloadBtn.disabled = false;
+  }
+
+  /* Actual file save — triggered only by the Download button. */
+  function downloadNow() {
+    if (!lastBlob || !lastFilename) return;
+    const url = URL.createObjectURL(lastBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = lastFilename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    setStatus('ok', 'Downloaded <b>' + esc(lastFilename) + '</b> · ' + fmtBytes(lastBlob.size));
+  }
+
+  function parseLines(el) {
+    return el.value.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+  
+  function setBusy(busy) {
+  fetchBtn.disabled = busy;
+  fetchBtn.classList.toggle('loading', busy);
+  fetchBtn.textContent = busy ? 'Working…' : FETCH_LABEL;
+  downloadBtn.disabled = busy || !lastBlob;
+}
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      mode = tab.dataset.mode;
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      panels.forEach(p => { p.hidden = p.dataset.panel !== mode; });
+      badgeEl.textContent = BADGE[mode];
+      setStatus('', '');
+    });
+  });
+
+  async function handleSingle() {
+    const url  = document.getElementById('single-url').value.trim();
+    const name = document.getElementById('single-name').value.trim();
+    if (!url) return setStatus('err', 'Enter a CSS URL.');
+
+    setBusy(true);
+    setStatus('loading', 'Fetching stylesheet…');
+    try {
+      const qs = new URLSearchParams({ url });
+      if (name) qs.set('filename', name);
+      const res = await fetch(ENDPOINTS.single + '?' + qs.toString());
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || ('HTTP ' + res.status));
+      }
+      const blob = await res.blob();
+      const filename = res.headers.get('X-Filename') || name || 'style.css';
+      storeBlob(blob, filename);
+      setStatus('ok', 'Fetched <b>' + esc(filename) + '</b> · ' + fmtBytes(blob.size) + ' — tap Download');
+    } catch (err) {
+      setStatus('err', esc(err.message || err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleBulk() {
+    const textarea = document.getElementById(mode === 'multi' ? 'multi-urls' : 'scrape-urls');
+    const list = parseLines(textarea);
+    if (!list.length) {
+      return setStatus('err', mode === 'multi'
+        ? 'Enter at least one CSS URL.'
+        : 'Enter at least one page URL.');
+    }
+
+    setBusy(true);
+    setStatus('loading', mode === 'multi'
+      ? 'Fetching stylesheets…'
+      : 'Scraping pages & fetching stylesheets…');
+
+    try {
+      const payload = mode === 'multi' ? { urls: list } : { scrape: list };
+      const res = await fetch(ENDPOINTS[mode], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || ('HTTP ' + res.status));
+      }
+      const blob = await res.blob();
+      const fetched = res.headers.get('X-Fetched');
+      storeBlob(blob, 'css-bundle.zip');
+      setStatus('ok',
+        'Fetched <b>css-bundle.zip</b> · ' + fmtBytes(blob.size) +
+        (fetched ? ' · ' + esc(fetched) + ' fetched' : '') + ' — tap Download');
+    } catch (err) {
+      setStatus('err', esc(err.message || err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleBundle() {
+    const list = parseLines(document.getElementById('bundle-urls'));
+    if (!list.length) return setStatus('err', 'Enter at least one CSS URL.');
+
+    const opts = { urls: list };
+    if (!document.getElementById('opt-recursive').checked) opts.recursive = false;
+
+    const maxDepth  = parseInt(document.getElementById('opt-maxDepth').value, 10);
+    const maxAssets = parseInt(document.getElementById('opt-maxAssets').value, 10);
+    const maxMB     = parseInt(document.getElementById('opt-maxBytes').value, 10);
+    if (Number.isFinite(maxDepth)  && maxDepth  >= 0) opts.maxDepth  = maxDepth;
+    if (Number.isFinite(maxAssets) && maxAssets > 0)  opts.maxAssets = maxAssets;
+    if (Number.isFinite(maxMB)     && maxMB     > 0)  opts.maxBytes  = maxMB * 1024 * 1024;
+
+    setBusy(true);
+    setStatus('loading', 'Fetching CSS &amp; assets… this can take a while for large bundles.');
+
+    try {
+      const res = await fetch(ENDPOINTS.bundle, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(opts)
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || ('HTTP ' + res.status));
+      }
+      const blob       = await res.blob();
+      const cssCount   = res.headers.get('X-Css-Count');
+      const assetCount = res.headers.get('X-Asset-Count');
+
+      storeBlob(blob, 'css-bundle-with-assets.zip');
+
+      let msg = 'Fetched <b>css-bundle-with-assets.zip</b> · ' + fmtBytes(blob.size);
+      if (cssCount !== null || assetCount !== null) {
+        msg += ' · ' + (cssCount || 0) + ' css, ' + (assetCount || 0) + ' assets';
+      }
+      msg += ' — tap Download';
+      setStatus('ok', msg);
+    } catch (err) {
+      setStatus('err', esc(err.message || err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function submitCurrent() {
+    if (fetchBtn.disabled) return;
+    if (mode === 'single') return handleSingle();
+    if (mode === 'bundle') return handleBundle();
+    return handleBulk();
+  }
+
+  fetchBtn.addEventListener('click', submitCurrent);
+  downloadBtn.addEventListener('click', downloadNow);
+
+  document.getElementById('single-url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitCurrent(); }
+  });
+
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        submitCurrent();
+      }
+    });
+  });
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var io        = document.getElementById("io");
+  var baseInput = document.getElementById("base");
+  var statusEl  = document.getElementById("extractor-status");
+  var countEl   = document.getElementById("count");
+  var btnPaste  = document.getElementById("btn-paste");
+  var btnConvert= document.getElementById("btn-convert");
+  var btnCopy   = document.getElementById("btn-copy");
+  var sendTo    = document.getElementById("send-to");
+  var sendSingle= sendTo.querySelector('[data-target="single"]');
+  var sendMulti = sendTo.querySelector('[data-target="multi"]');
+  var sendBundle= sendTo.querySelector('[data-target="bundle"]');
+
+  var source     = "";
+  var lastResult = "";
+
+  function setStatus(msg, cls) {
+    statusEl.textContent = msg || "";
+    statusEl.className = "status" + (cls ? " " + cls : "");
+  }
+
+  function resultLines() {
+    return lastResult
+      ? lastResult.split("\n").map(function (l) { return l.trim(); }).filter(Boolean)
+      : [];
+  }
+
+  function refresh() {
+    var n = io.value ? io.value.split("\n").filter(function (l) { return l.trim(); }).length : 0;
+    countEl.textContent = n ? n + (n === 1 ? " line" : " lines") : "";
+    btnConvert.disabled = !io.value.trim();
+    btnCopy.disabled    = !io.value.trim();
+
+    var out = resultLines();
+    sendSingle.disabled = out.length !== 1;
+    sendMulti.disabled  = out.length === 0;
+    sendBundle.disabled = out.length === 0;
+  }
+
+  function hasScheme(url) {
+    return /^[a-z][a-z0-9+.-]*:/i.test(url);
+  }
+
+  function normalizeBase(raw) {
+    if (!raw) return "";
+    var base = raw.trim();
+    if (!base) return "";
+
+    if (base.indexOf("//") === 0) {
+      base = "https:" + base;
+    } else if (!hasScheme(base)) {
+      base = "https://" + base;
+    }
+
+    var lastSlash   = base.lastIndexOf("/");
+    var lastSegment = base.slice(lastSlash + 1);
+    if (lastSegment && lastSegment.indexOf(".") === -1) {
+      base += "/";
+    }
+    return base;
+  }
+
+  function normalizeHref(href, base) {
+    if (!href) return "";
+    href = href.trim();
+    if (!href) return "";
+
+    if (href.indexOf("//") === 0) return "https:" + href;
+    if (hasScheme(href)) return href;
+
+    if (base) {
+      try { return new URL(href, base).href; }
+      catch (e) { /* fall through */ }
+    }
+    return href;
+  }
+
+  function isStylesheetRel(rel) {
+    return /(^|\s)stylesheet(\s|$)/i.test(rel || "");
+  }
+
+  function extractHrefs(html, base) {
+    var out = [];
+
+    try {
+      var doc = new DOMParser().parseFromString(html, "text/html");
+      var links = doc.querySelectorAll("link[rel]");
+      for (var i = 0; i < links.length; i++) {
+        var link = links[i];
+        if (!isStylesheetRel(link.getAttribute("rel"))) continue;
+        var href = normalizeHref(link.getAttribute("href") || "", base);
+        if (href) out.push(href);
+      }
+    } catch (e) { /* fall through to regex */ }
+
+    if (!out.length) {
+      var tagRe = /<link\b[^>]*>/gi, m;
+      while ((m = tagRe.exec(html))) {
+        var tag = m[0];
+        var relM  = /\brel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/i.exec(tag);
+        var hrefM = /\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/i.exec(tag);
+        if (!relM || !hrefM) continue;
+        var relVal  = relM[1] !== undefined ? relM[1] : (relM[2] !== undefined ? relM[2] : relM[3]);
+        var hrefVal = hrefM[1] !== undefined ? hrefM[1] : (hrefM[2] !== undefined ? hrefM[2] : hrefM[3]);
+        if (!isStylesheetRel(relVal)) continue;
+        hrefVal = normalizeHref(hrefVal || "", base);
+        if (hrefVal) out.push(hrefVal);
+      }
+    }
+
+    return out;
+  }
+
+  function doPaste() {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      manualFallback();
+      return;
+    }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text) { setStatus("Clipboard is empty", "err"); return; }
+      source = text;
+      lastResult = "";
+      io.readOnly = true;
+      io.value = text;
+      io.scrollTop = 0;
+      setStatus("Pasted " + text.length + " chars — tap Convert", "ok");
+      refresh();
+    }).catch(function () {
+      manualFallback();
+    });
+  }
+
+  function manualFallback() {
+    io.readOnly = false;
+    io.focus();
+    setStatus("Clipboard blocked — paste manually, then Convert", "err");
+  }
+
+  function doConvert() {
+    var input = (io.readOnly && lastResult && io.value === lastResult) ? source : io.value;
+
+    if (!input || !input.trim()) {
+      setStatus("Nothing to convert", "err");
+      return;
+    }
+
+    var base = normalizeBase(baseInput.value);
+    var urls = extractHrefs(input, base);
+
+    if (!urls.length) {
+      setStatus('No <link rel="stylesheet"> href found', "err");
+      return;
+    }
+
+    source     = input;
+    lastResult = urls.join("\n");
+
+    io.readOnly = true;
+    io.value    = lastResult;
+    io.scrollTop = 0;
+
+    var unresolved = 0;
+    for (var i = 0; i < urls.length; i++) {
+      if (!hasScheme(urls[i])) unresolved++;
+    }
+
+    if (unresolved > 0) {
+      setStatus("Extracted " + urls.length + " — " + unresolved +
+                " relative need Base URL", "err");
+    } else {
+      setStatus("Extracted " + urls.length +
+                (urls.length === 1 ? " href" : " hrefs") +
+                " — tap Copy or Send to", "ok");
+    }
+    refresh();
+  }
+
+  function doCopy() {
+    var text = io.value;
+    if (!text) return;
+
+    function legacyCopy() {
+      try {
+        io.focus();
+        io.setSelectionRange(0, text.length);
+        var ok = document.execCommand("copy");
+        setStatus(ok ? "Copied to clipboard" : "Copy failed — long-press to copy",
+                  ok ? "ok" : "err");
+      } catch (e) {
+        setStatus("Copy failed — long-press to copy", "err");
+      }
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        setStatus("Copied " + text.split("\n").length + " lines", "ok");
+      }).catch(legacyCopy);
+    } else {
+      legacyCopy();
+    }
+  }
+
+  function sendToTarget(target) {
+    var urls = resultLines();
+    if (!urls.length) return;
+
+    if (target === "single") {
+      if (urls.length !== 1) return;
+      var input = document.getElementById("single-url");
+      input.value = urls[0];
+      input.focus();
+      input.select();
+      setStatus("Sent 1 URL to Single", "ok");
+      return;
+    }
+
+    var textareaId = target === "multi" ? "multi-urls" : "bundle-urls";
+    var textarea = document.getElementById(textareaId);
+    if (!textarea) return;
+
+    textarea.value = urls.join("\n");
+
+    var tabBtn = document.querySelector('.tabs button[data-mode="' + target + '"]');
+    if (tabBtn) tabBtn.click();
+  }
+
+  btnPaste.addEventListener("click", doPaste);
+  btnConvert.addEventListener("click", doConvert);
+  btnCopy.addEventListener("click", doCopy);
+
+  [sendSingle, sendMulti, sendBundle].forEach(function (b) {
+    b.addEventListener("click", function () { sendToTarget(b.dataset.target); });
+  });
+
+  io.addEventListener("input", function () {
+    if (!io.readOnly) {
+      source = io.value;
+      lastResult = "";
+    }
+    refresh();
+  });
+
+  refresh();
+})();
+</script>
+
+<script>
+const ThemeToggle = (function() {
+  const root = document.documentElement; // <html>
+  const STORAGE_KEY = 'theme-preference';
+  
+  // Sun icon (shown in dark mode → click to go light)
+  const SUN_ICON = `
+    <circle cx="12" cy="12" r="5"></circle>
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+  `;
+  
+  // Moon icon (shown in light mode → click to go dark)
+  const MOON_ICON = `
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  `;
+  
+  // Swap SVG contents to match the current theme
+  function syncIcon() {
+    const svg = document.querySelector('#themeBtn svg');
+    if (!svg) return;
+    svg.innerHTML = getTheme() === 'light' ? MOON_ICON : SUN_ICON;
+  }
+  
+  // Helper to apply the theme
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    } else {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    }
+    // Update the color-scheme CSS property for native UI elements
+    root.style.colorScheme = theme;
+    
+    // Keep the icon in sync
+    syncIcon();
+  }
+  
+  // Helper to get the current theme
+  function getTheme() {
+    return root.classList.contains('light') ? 'light' : 'dark';
+  }
+  
+  // Main toggle function
+  function toggle() {
+    const current = getTheme();
+    const next = current === 'dark' ? 'light' : 'dark';
+    
+    applyTheme(next);
+    localStorage.setItem(STORAGE_KEY, next);
+    
+    // Dispatch a custom event in case other parts of your app need to react
+    window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: next } }));
+  }
+  
+  // Initialization logic
+  function init() {
+    const savedTheme = localStorage.getItem(STORAGE_KEY);
+    
+    if (savedTheme) {
+      // 1. Use saved preference
+      applyTheme(savedTheme);
+    } else {
+      // 2. Fall back to OS preference
+      const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      applyTheme(prefersLight ? 'light' : 'dark');
+    }
+    
+    // 3. Listen for OS changes (if the user hasn't manually picked one)
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        applyTheme(e.matches ? 'light' : 'dark');
+      }
+    });
+  }
+  
+  return { init, toggle, getTheme, syncIcon };
+})();
+
+// Wire up the button (safe if it doesn't exist yet)
+document.getElementById('themeBtn')?.addEventListener('click', ThemeToggle.toggle);
+
+// Apply the theme (and correct icon) on load
+ThemeToggle.init();
+</script>
+
+</body>
+</html>
