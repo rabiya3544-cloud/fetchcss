@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hex to RGB Converter & Inverse</title>
+<style>
+  /* ============================================================
+     RESET & BASE
+     ============================================================ */
+  :root {
+    --bg: #f7f7f8;
+    --panel: #ffffff;
+    --text: #111111;
+    --text-muted: #666666;
+    --border: #d1d1d6;
+    --radius-pill: 999px;
+    --radius-box: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    padding: 16px 12px;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ============================================================
+     SEARCH BAR
+     ============================================================ */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: var(--panel);
+    border-radius: var(--radius-pill);
+    padding: 8px 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    gap: 12px;
+  }
+
+  .search-bar svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--text-muted);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 0;
+    padding: 0;
+  }
+
+  .search-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .divider {
+    width: 1px;
+    height: 16px;
+    background-color: var(--border);
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-btn svg {
+    stroke: var(--text);
+    stroke-width: 2.5;
+  }
+
+  .icon-btn.clear-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .icon-btn.mic-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ============================================================
+     COLOR CARDS & PICKER
+     ============================================================ */
+  .color-card {
+    background: var(--panel);
+    border-radius: var(--radius-box);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-card {
+    height: 100%;
+    min-height: 0px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    gap: 4px;
+  }
+
+  .color-preview {
+    width: 10%;
+    flex-shrink: 0;
+  }
+
+  .separator {
+    width: 1px;
+    background-color: var(--border);
+    flex-shrink: 0;
+  }
+
+  .picker-card {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .sv-area {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    background: red;
+    cursor: crosshair;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .sv-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, #fff, transparent);
+  }
+
+  .sv-area::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #000, transparent);
+  }
+
+  .sv-cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(0,0,0,0.3);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .slider-wrapper {
+    padding: 16px;
+  }
+
+  .hue-slider {
+    width: 100%;
+    height: 12px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+    position: relative;
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  .hue-cursor {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* ============================================================
+     FORMAT GRID & INPUTS
+     ============================================================ */
+  .format-grid {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  fieldset {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  legend {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 0 4px;
+    margin-left: 8px;
+  }
+
+  .field-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--text);
+    width: 100%;
+    padding: 8px 12px;
+    font-family: inherit;
+    min-width: 0;
+  }
+
+  .hex-fieldset .field-input {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .copy-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .copy-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-muted);
+    fill: none;
+    stroke-width: 1.5;
+    transition: stroke 0.2s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input type="text" class="search-input" id="searchInput" value="#03050a" maxlength="7" spellcheck="false">
+    <div class="search-actions">
+      <button class="icon-btn clear-btn" id="clearBtn" aria-label="Clear">
+        <svg viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="divider"></div>
+      <button class="icon-btn mic-btn" aria-label="Voice input">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="22"></line>
+          <line x1="8" y1="22" x2="16" y2="22"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Color Picker Card -->
+  <div class="color-card">
+    <div class="preview-card">
+      <div id="previewOriginal" class="color-preview"></div>
+      <div class="separator"></div>
+      <div class="picker-card">
+        <div class="sv-area" id="svArea">
+          <div class="sv-cursor" id="svCursor"></div>
+        </div>
+        <div class="slider-wrapper">
+          <div class="hue-slider" id="hueSlider">
+            <div class="hue-cursor" id="hueCursor"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Format Grid Card -->
+  <div class="color-card">
+    <div class="format-grid">
+      <div class="grid-row">
+        <fieldset>
+          <legend>HEX</legend>
+          <input type="text" class="field-input" id="hexVal" value="#03050a" readonly="">
+          <button class="copy-btn" id="copyHex" aria-label="Copy HEX">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </fieldset>
+        <fieldset>
+          <legend>RGB</legend>
+          <input type="text" class="field-input" id="rgbVal" readonly>
+          <button class="copy-btn" id="copyRgb" aria-label="Copy RGB">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </fieldset>
+      </div>
+      <div class="grid-row">
+        <fieldset>
+          <legend>INVERSE HEX</legend>
+          <input type="text" class="field-input" id="inverseHexVal" readonly="">
+          <button class="copy-btn" id="copyInverseHex" aria-label="Copy Inverse HEX">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </fieldset>
+        <fieldset>
+          <legend>INVERSE RGB</legend>
+          <input type="text" class="field-input" id="inverseRgbVal" readonly>
+          <button class="copy-btn" id="copyInverseRgb" aria-label="Copy Inverse RGB">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inverse / Opposite Color Card -->
+  <div class="color-card">
+    <div class="preview-card">
+      <div id="previewInverse" class="color-preview"></div>
+      <div class="separator"></div>
+      <div class="picker-card">
+        <div class="sv-area" id="svAreaInverse">
+          <div class="sv-cursor" id="svCursorInverse"></div>
+        </div>
+        <div class="slider-wrapper">
+          <div class="hue-slider" id="hueSliderInverse">
+            <div class="hue-cursor" id="hueCursorInverse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // State
+  let h = 223, s = 70, v = 4; // Default HSV from #03050a
+
+  // DOM Elements - Main
+  const svArea = document.getElementById('svArea');
+  const svCursor = document.getElementById('svCursor');
+  const hueSlider = document.getElementById('hueSlider');
+  const hueCursor = document.getElementById('hueCursor');
+  const searchInput = document.getElementById('searchInput');
+  const previewOriginal = document.getElementById('previewOriginal');
+  const hexVal = document.getElementById('hexVal');
+  const rgbVal = document.getElementById('rgbVal');
+  const clearBtn = document.getElementById('clearBtn');
+
+  // DOM Elements - Inverse
+  const svAreaInverse = document.getElementById('svAreaInverse');
+  const svCursorInverse = document.getElementById('svCursorInverse');
+  const hueCursorInverse = document.getElementById('hueCursorInverse');
+  const previewInverse = document.getElementById('previewInverse');
+  const inverseHexVal = document.getElementById('inverseHexVal');
+  const inverseRgbVal = document.getElementById('inverseRgbVal');
+
+  // DOM Elements - Copy Buttons
+  const copyHex = document.getElementById('copyHex');
+  const copyRgb = document.getElementById('copyRgb');
+  const copyInverseHex = document.getElementById('copyInverseHex');
+  const copyInverseRgb = document.getElementById('copyInverseRgb');
+
+  // --- COLOR CONVERSION HELPERS ---
+
+  function hsvToRgb(h, s, v) {
+    s /= 100; v /= 100;
+    const c = v * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = v - c;
+    let r = 0, g = 0, b = 0;
+    
+    if (h >= 0 && h < 60) { r = c; g = x; b = 0; }
+    else if (h >= 60 && h < 120) { r = x; g = c; b = 0; }
+    else if (h >= 120 && h < 180) { r = 0; g = c; b = x; }
+    else if (h >= 180 && h < 240) { r = 0; g = x; b = c; }
+    else if (h >= 240 && h < 300) { r = x; g = 0; b = c; }
+    else if (h >= 300 && h < 360) { r = c; g = 0; b = x; }
+    
+    return {
+      r: Math.round((r + m) * 255),
+      g: Math.round((g + m) * 255),
+      b: Math.round((b + m) * 255)
+    };
+  }
+
+  function rgbToHsv(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, v = max;
+    const d = max - min;
+    s = max === 0 ? 0 : d / max;
+    
+    if (max === min) {
+      h = 0;
+    } else {
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return { h: h * 360, s: s * 100, v: v * 100 };
+  }
+
+  function rgbToHex(r, g, b) {
+    return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+  }
+
+  function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  // --- UI UPDATES ---
+
+  function updateUI() {
+    // 1. Update Main Picker UI
+    svArea.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
+    hueCursor.style.left = `${(h / 360) * 100}%`;
+    hueCursor.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
+    svCursor.style.left = `${s}%`;
+    svCursor.style.top = `${100 - v}%`;
+
+    // 2. Update Main Inputs & Preview
+    const rgb = hsvToRgb(h, s, v);
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+    
+    previewOriginal.style.backgroundColor = hex;
+    hexVal.value = hex;
+    searchInput.value = hex;
+    rgbVal.value = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+
+    // 3. Calculate Inverse Color
+    const rInv = 255 - rgb.r;
+    const gInv = 255 - rgb.g;
+    const bInv = 255 - rgb.b;
+    
+    // 4. Update Inverse Picker UI & Inputs (Directly using RGB to avoid errors)
+    const inverseHex = rgbToHex(rInv, gInv, bInv);
+    const inverseHsv = rgbToHsv(rInv, gInv, bInv); 
+    
+    hueCursorInverse.style.left = `${(inverseHsv.h / 360) * 100}%`;
+    hueCursorInverse.style.backgroundColor = `hsl(${inverseHsv.h}, 100%, 50%)`;
+    
+    svAreaInverse.style.backgroundColor = `hsl(${inverseHsv.h}, 100%, 50%)`;
+    svCursorInverse.style.left = `${inverseHsv.s}%`;
+    svCursorInverse.style.top = `${100 - inverseHsv.v}%`;
+
+    previewInverse.style.backgroundColor = inverseHex;
+    inverseHexVal.value = inverseHex;
+    inverseRgbVal.value = `${rInv}, ${gInv}, ${bInv}`;
+  }
+
+  // --- INTERACTION LOGIC ---
+
+  function handleSVDrag(e) {
+    const rect = svArea.getBoundingClientRect();
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+
+    s = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+    v = Math.max(0, Math.min(100, (1 - (clientY - rect.top) / rect.height) * 100));
+    
+    updateUI();
+  }
+
+  function handleHueDrag(e) {
+    const rect = hueSlider.getBoundingClientRect();
+    let clientX = e.clientX;
+    
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+    }
+
+    let percentage = (clientX - rect.left) / rect.width;
+    percentage = Math.max(0, Math.min(1, percentage));
+    
+    h = percentage * 360;
+    updateUI();
+  }
+
+  function initDrag(element, handler) {
+    let isDragging = false;
+
+    element.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      handler(e);
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) handler(e);
+    });
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    element.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      handler(e);
+      e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging) {
+        handler(e);
+        e.preventDefault();
+      }
+    }, { passive: false });
+    window.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+  }
+
+  initDrag(svArea, handleSVDrag);
+  initDrag(hueSlider, handleHueDrag);
+
+  function handleHexInput(e) {
+    let val = e.target.value.trim();
+    if (val.length > 0 && val[0] !== '#') val = '#' + val;
+    
+    if (/^#[0-9A-F]{6}$/i.test(val)) {
+      const rgb = hexToRgb(val);
+      const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+      h = hsv.h;
+      s = hsv.s;
+      v = hsv.v;
+      updateUI();
+    }
+  }
+
+  hexVal.addEventListener('input', handleHexInput);
+  searchInput.addEventListener('input', handleHexInput);
+
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    h = 0; s = 0; v = 0; 
+    updateUI();
+    searchInput.focus();
+  });
+
+  // --- CLIPBOARD LOGIC ---
+  function copyToClipboard(text, btnElement) {
+    navigator.clipboard.writeText(text).then(() => {
+      const svg = btnElement.querySelector('svg');
+      const originalStroke = svg.style.stroke || 'var(--text-muted)';
+      svg.style.stroke = '#007aff'; 
+      setTimeout(() => {
+        svg.style.stroke = originalStroke;
+      }, 300);
+    });
+  }
+
+  copyHex.addEventListener('click', () => copyToClipboard(hexVal.value, copyHex));
+  copyRgb.addEventListener('click', () => copyToClipboard(rgbVal.value, copyRgb));
+  copyInverseHex.addEventListener('click', () => copyToClipboard(inverseHexVal.value, copyInverseHex));
+  copyInverseRgb.addEventListener('click', () => copyToClipboard(inverseRgbVal.value, copyInverseRgb));
+
+  // Initialize on load
+  updateUI();
+</script>
+<script>
+// ============================================================
+// 1. COLOR INVERTER (Math & Formatting)
+// ============================================================
+const ColorInverter = (function() {
+  function invert(color) {
+    // Handle Hex
+    const hexMatch = color.match(/^#?([0-9a-f]{3,8})$/i);
+    if (hexMatch) {
+      let hex = hexMatch[1];
+      if (hex.length === 3 || hex.length === 4) {
+        hex = hex.split('').map(c => c + c).join('');
+      }
+      const r = 255 - parseInt(hex.substring(0, 2), 16);
+      const g = 255 - parseInt(hex.substring(2, 4), 16);
+      const b = 255 - parseInt(hex.substring(4, 6), 16);
+      const a = hex.length === 8 ? hex.substring(6, 8) : '';
+      
+      const newHex = [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+      return `#${newHex}${a}`;
+    }
+    
+    // Handle RGB/RGBA
+    const rgbMatch = color.match(/rgba?\(([^)]+)\)/i);
+    if (rgbMatch) {
+      const parts = rgbMatch[1].split(',').map(s => s.trim());
+      const r = 255 - parseInt(parts[0], 10);
+      const g = 255 - parseInt(parts[1], 10);
+      const b = 255 - parseInt(parts[2], 10);
+      const a = parts[3] !== undefined ? `, ${parts[3]}` : '';
+      
+      // Note: This adds spaces to match your exact desired output format
+      return `rgb${a ? 'a' : ''}(${r}, ${g}, ${b}${a})`;
+    }
+    
+    return color; // Fallback
+  }
+  
+  return { invert };
+})();
+
+
+// ============================================================
+// 2. CSS INVERTER (String Generation)
+// ============================================================
+const CSSInverter = (function() {
+  function generate(cssText) {
+    // 1. Regex to match raw colors (Hex, RGB, RGBA)
+    // We do NOT match var() so it leaves semantic links alone
+    const HEX = String.raw`#[0-9a-fA-F]{3,4}(?:[0-9a-fA-F]{2})?\b|#[0-9a-fA-F]{4}\b|#[0-9a-fA-F]{3}\b`;
+const RGB = String.raw`rgba?\([^)]+\)`;
+const HSL = String.raw`hsla?\([^)]+\)`;
+
+const colorRegex = new RegExp(`(${HEX}|${RGB}|${HSL})`, 'g');
+
+    
+    // 2. Find and invert every literal color found in the text
+    let invertedCSS = cssText.replace(colorRegex, (match) => {
+      return ColorInverter.invert(match);
+    });
+    
+    // 3. Swap the selector from :root.dark to :root.light
+    const selectorRegex = new RegExp(String.raw`:root(?:\.dark)?\s*\{`, 'g');
+    invertedCSS = invertedCSS.replace(selectorRegex, ':root {');
+    
+    
+    return invertedCSS;
+  }
+  
+  return { generate };
+})();
+
+const cssText = document.getElementById("cssText");
+const fetchBtn = document.getElementById('fetch-btn');
+
+fetchBtn.addEventListener('click', function(){
+const originalCSS = cssText.value;
+const invertedCSS = CSSInverter.generate(originalCSS);
+cssText.value = invertedCSS;
+});
+
+</script>
+</body>
+</html>

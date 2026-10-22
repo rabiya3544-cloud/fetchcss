@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<title>Compact Table</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+:root {
+  /* Body */
+  --c-bg: #ffffff;
+  --c-fg: #1b2026;
+
+  /* Header */
+  --c-header-grad-a: #eaf1fb;
+  --c-header-grad-b: #c9d9ee;
+  --c-header-fg: #1b2026;
+  --c-header-shadow: rgba(15, 23, 42, .12);
+  --c-header-sheen: rgba(255, 255, 255, .85);
+  --c-title: #0f172a;
+  --c-subtitle: #64748b;
+
+  /* Logo */
+  --c-logo-grad-a: #60a5fa;
+  --c-logo-grad-b: #2563eb;
+  --c-logo-fg: #ffffff;
+  --c-logo-shadow: rgba(37, 99, 235, .35);
+
+  /* Footer */
+  --c-footer-grad-a: #eef3f9;
+  --c-footer-grad-b: #c9d6e4;
+  --c-footer-sheen: rgba(255, 255, 255, .85);
+  --c-footer-shadow: rgba(15, 23, 42, .06);
+  --c-line-strong: #b8c4d2;
+  --c-fg-dim: #5b6672;
+
+  /* Shared sizing (page chrome) */
+  --fs: 11px;
+  --pad-x: 4px;
+}
+
+body {
+  margin: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: var(--fs);
+  line-height: 1.1;
+  color: var(--c-fg);
+  background: var(--c-bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+header {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px var(--pad-x);
+  background: linear-gradient(180deg, var(--c-header-grad-a) 0%, var(--c-header-grad-b) 100%);
+  color: var(--c-header-fg);
+  box-shadow: 0 2px 8px var(--c-header-shadow), 0 1px 0 var(--c-header-sheen) inset;
+}
+.logo {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: linear-gradient(135deg, var(--c-logo-grad-a) 0%, var(--c-logo-grad-b) 100%);
+  color: var(--c-logo-fg);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  box-shadow:
+    0 1px 2px rgba(37, 99, 235, .35),
+    0 2px 6px rgba(37, 99, 235, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .28), inset 0 -1px 0 rgba(15, 23, 42, .12);
+}
+
+.logo:active {
+  box-shadow:
+    0 1px 1px rgba(37, 99, 235, .30),
+    inset 0 1px 2px rgba(15, 23, 42, .18);
+  transform: translateY(1px);
+}
+
+.title-group { display: flex; flex-direction: column; min-width: 0; line-height: 1; }
+.title { font-size: 11px; font-weight: 700; letter-spacing: -0.01em; color: var(--c-title); }
+.subtitle {
+  margin-top: 2px;
+  font-size: 8.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--c-subtitle);
+}
+
+header .header-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: linear-gradient(135deg, var(--c-logo-grad-a) 0%, var(--c-logo-grad-b) 100%);
+  color: var(--c-logo-fg);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 1px 2px var(--c-logo-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, .22);
+  transition: filter .12s ease, transform .04s ease;
+}
+header .header-btn:hover {
+  filter: brightness(1.06);
+}
+header .header-btn:active {
+  transform: translateY(1px);
+  filter: brightness(0.96);
+}
+header .header-btn:focus-visible {
+  outline: 2px solid var(--c-logo-grad-b);
+  outline-offset: 2px;
+}
+
+main {
+flex: 1 1 0;
+min-height: 0;
+overflow: hidden;
+flex-direction:column;
+display: flex;
+position: relative;
+}
+footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px var(--pad-x);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--c-fg-dim);
+  background: linear-gradient(180deg, var(--c-footer-grad-a) 0%, var(--c-footer-grad-b) 100%);
+  border-top: 1px solid var(--c-line-strong);
+  box-shadow: inset 0 1px 0 var(--c-footer-sheen), 0 -1px 2px var(--c-footer-shadow);
+}
+.clock {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+  text-transform: none;
+  color: var(--c-fg);
+}
+.clock-colon { display: inline-block; width: .6em; text-align: center; }
+.clock-meridiem {
+  margin-left: 2px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--c-fg-dim);
+}
+
+@media (min-width: 480px) {
+  :root { --fs: 12px; --pad-x: 6px; }
+  .logo { width: 24px; height: 24px; font-size: 13px; border-radius: 6px; }
+  .title { font-size: 12px; }
+  .subtitle { font-size: 9px; }
+  .clock { font-size: 11px; }
+}
+@media (min-width: 768px) {
+  :root { --fs: 13px; --pad-x: 8px; }
+  header { gap: 8px; padding: 6px var(--pad-x); }
+  .logo { width: 28px; height: 28px; font-size: 15px; }
+  .title { font-size: 13px; }
+  .subtitle { font-size: 9.5px; }
+  .clock { font-size: 12px; }
+  .clock-meridiem { font-size: 9px; }
+}
+@media (min-width: 480px) {
+  header .header-btn {
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+}
+@media (min-width: 768px) {
+  header .header-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+  }
+}
+
+header .header-btn.ghost {
+  background: rgba(255, 255, 255, .55);
+  color: var(--c-title);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, .12),
+    0 2px 4px rgba(15, 23, 42, .06),
+    inset 0 1px 0 var(--c-header-sheen),
+    inset 0 0 0 1px rgba(15, 23, 42, .06);
+}
+header .header-btn.ghost:hover {
+  background: rgba(255, 255, 255, .82);
+}
+header .header-btn.ghost:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 1px 1px rgba(15, 23, 42, .10),
+    inset 0 1px 2px rgba(15, 23, 42, .06),
+    inset 0 0 0 1px rgba(15, 23, 42, .08);
+}
+header .header-btn.is-loading i {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+<style>
+/* ============================================================
+   1. TOKENS
+   ============================================================ */
+.jfr-table {
+  --c-fg-dim: #5b6672;
+  --c-line: #d3d9df;
+  --c-line-soft: #e9edf1;
+  --c-bg-alt: #fbfcfd;
+  --c-bg-head: #f1f4f7;
+  --c-row-hover: #e8f0fb;
+  --c-row-active: #dbe7f7;
+  --c-match-accent: #16a34a;
+  --c-miss-accent: #dc2626;
+  --fs: 11px;
+  --pad-y: 2px;
+  --pad-x: 4px;
+  --no-w: 30px;
+  --size-w: 50px;
+  --status-w: 25px;
+  --cols: var(--no-w) 1fr var(--size-w) 0.3fr 0.3fr var(--status-w);
+
+  --c-bg-foot: #f1f4f7;
+}
+/* ============================================================
+   2. COMPONENT ROOT
+   ============================================================ */
+.jfr-table {
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--fs);
+}
+
+/* ============================================================
+   3. TABLE LAYOUT
+   ============================================================ */
+
+/* Row groups */
+.jfr-table thead { flex: 0 0 auto; display: grid;
+                    grid-template-columns: var(--cols);
+                    grid-template-rows: 1fr 1fr;
+                    position: relative; z-index: 2;
+                    border-top: 1px solid var(--c-line);
+                    box-shadow: 0 3px 8px 0 rgba(15, 23, 42, .14); }
+
+.jfr-table tbody { flex: 1 1 0; min-height: 0; overflow: hidden;
+                    display: flex; flex-direction: column; }
+
+.jfr-table tfoot { flex: 0 0 auto;
+                    display: flex; flex-direction: column;
+                    position: relative; z-index: 2;
+                    border-bottom: 1px solid var(--c-line);
+                    box-shadow: 0 -3px 8px 0 rgba(15, 23, 42, .14); }
+
+/* Rows */
+.jfr-table thead tr { display: contents; }
+
+.jfr-table tbody tr,
+.jfr-table tfoot tr { display: grid;
+                      grid-template-columns: var(--cols);
+                      width: 100%; min-height: 0; }
+
+.jfr-table tbody tr { flex: 1 1 0; min-height: 0; }
+.jfr-table tfoot tr { flex: 0 0 auto; min-height: auto; }
+
+/* ============================================================
+   4. CELL BASE
+   ============================================================ */
+.jfr-table th,
+.jfr-table td {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: var(--pad-y) var(--pad-x);
+  overflow: hidden;
+  border-right: 1px solid var(--c-line);
+  box-shadow: inset 0 -1px 0 var(--c-line-soft);
+}
+
+.jfr-table th:last-child,
+.jfr-table td:last-child { border-right: 0; }
+
+.jfr-table th > span,
+.jfr-table td > span {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   5. COLUMN: No.
+   ============================================================ */
+.jfr-table th[data-col="no"],
+.jfr-table td[data-col="no"] {
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-fg-dim);
+}
+.jfr-table th[data-col="no"] > span,
+.jfr-table td[data-col="no"] > span { flex: 0 1 auto; text-align: center; }
+.jfr-table tbody td[data-col="no"] { justify-content: flex-end; }
+.jfr-table tbody td[data-col="no"] > span { text-align: right; }
+
+/* ============================================================
+   6. COLUMN: Group1
+   ============================================================ */
+.jfr-table tbody td[data-col="group1"] {
+  position: relative;
+  box-shadow: inset 0 -1px 0 var(--c-line-soft);
+}
+.jfr-table tbody td[data-col="group1"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 10px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, .22), transparent);
+  pointer-events: none;
+}
+.jfr-table tbody td[data-col="group1"] > span {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  font-size: calc(var(--fs) - 1px);
+  font-feature-settings: "calt" 0, "liga" 0;
+  font-variant-ligatures: none;
+  letter-spacing: -0.01em;
+}
+.jfr-table tbody td[data-col="group1"].is-matched {
+  border-left: 2px solid var(--c-match-accent);
+}
+.jfr-table tbody td[data-col="group1"] span{
+  padding-left: 4px;
+}
+
+/* ============================================================
+   7. COLUMN: Size
+   ============================================================ */
+.jfr-table th[data-col="size"],
+.jfr-table td[data-col="size"] {
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-fg-dim);
+}
+.jfr-table th[data-col="size"] > span,
+.jfr-table td[data-col="size"] > span { 
+ flex: 0 1 auto;
+ text-align: center;
+}
+.jfr-table tbody td[data-col="size"] > span {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-size: calc(var(--fs) - 2px);
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+/* ============================================================
+   8. COLUMN: Assets (two sub-cells)
+   ============================================================ */
+.jfr-table tbody td[data-col="assets-sub1"] {
+  padding-right: 0;
+  border-right: 0;
+  justify-content: center;
+  box-shadow: inset -1px 0 0 var(--c-line), inset 0 -1px 0 var(--c-line-soft);
+}
+.jfr-table tbody td[data-col="assets-sub2"] {
+  padding-left: 0;
+  border-right: 0;
+  justify-content: center;
+  box-shadow: inset -1px 0 0 var(--c-line), inset 0 -1px 0 var(--c-line-soft);
+}
+.jfr-table tbody td[data-col="assets-sub1"] > span,
+.jfr-table tbody td[data-col="assets-sub2"] > span {
+  flex: 0 1 auto;
+  text-align: center;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-size: calc(var(--fs) - 2px);
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   9. COLUMN: Status
+   ============================================================ */
+.jfr-table th[data-col="status"],
+.jfr-table td[data-col="status"] {
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-fg-dim);
+}
+.jfr-table tbody td[data-col="status"]>span {
+  text-align: center;
+  font-size: calc(var(--fs) - 2px);
+  letter-spacing: -0.01em;
+}
+.jfr-table th[data-col="status"] > span,
+.jfr-table td[data-col="status"] > span { flex: 0 1 auto; text-align: center; }
+.jfr-table tbody td[data-col="status"] > span { text-align: center; }
+.jfr-table tbody td[data-col="status"].is-ok    { color: var(--c-match-accent); }
+.jfr-table tbody td[data-col="status"].is-error { color: var(--c-miss-accent); }
+
+/* ============================================================
+   10. THEAD: grid placement + look
+   ============================================================ */
+.jfr-table thead th[data-col$="-spacer"] { display: none; }
+
+.jfr-table thead th[data-col="no"]     { grid-area: 1 / 1 / 3 / 2; }
+.jfr-table thead th[data-col="group1"] { grid-area: 1 / 2 / 3 / 3; }
+.jfr-table thead th[data-col="size"]   { grid-area: 1 / 3 / 3 / 4; }
+.jfr-table thead th[data-col="assets"] { grid-area: 1 / 4 / 2 / 6; }
+
+.jfr-table thead th[data-col="assets-sub1"] {
+  grid-area: 2 / 4 / 3 / 5;
+  padding-right: 0;
+  border-right: 0;
+  box-shadow: inset -1px 0 0 var(--c-line), inset 0 -1px 0 var(--c-line);
+}
+.jfr-table thead th[data-col="assets-sub2"] {
+  grid-area: 2 / 5 / 3 / 6;
+  padding-left: 0;
+}
+.jfr-table thead th[data-col="status"] { grid-area: 1 / 6 / 3 / 7; }
+
+.jfr-table thead th[data-col="assets-sub1"],
+.jfr-table thead th[data-col="assets-sub2"] { text-transform: none; }
+
+.jfr-table thead th {
+  background: var(--c-bg-head);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--c-fg-dim);
+  box-shadow: inset 0 -1px 0 var(--c-line);
+}
+
+/* ============================================================
+   11. TBODY: zebra + last-row separators
+   ============================================================ */
+.jfr-table tbody tr:nth-child(even) td { background: var(--c-bg-alt); }
+
+.jfr-table tbody tr:last-child td { box-shadow: inset 0 0 0 transparent; }
+
+.jfr-table tbody tr:last-child td[data-col="assets-sub1"],
+.jfr-table tbody tr:last-child td[data-col="assets-sub2"] {
+  box-shadow: inset -1px 0 0 var(--c-line);
+}
+
+/* ============================================================
+   12. TFOOT
+   ============================================================ */
+.jfr-table tfoot td {
+  background: var(--c-bg-foot);
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 var(--c-line), inset 0 2px 0 rgba(255, 255, 255, .4);
+}
+.jfr-table tfoot td[data-col="footer-no"] {
+  grid-column: 1 / span 2;
+  text-align: right;
+}
+.jfr-table tfoot td[data-col="footer-no"] span { padding-right: 15px; }
+
+.jfr-table tfoot td[data-col="size"] span {
+  font-weight: 700;
+  font-size: calc(var(--fs) - 2px);
+}
+.jfr-table tfoot td[data-col="footer-assets-sub1"], .jfr-table tfoot td[data-col="footer-assets-sub2"], .jfr-table tfoot td[data-col="footer-status"]{
+text-align:center;
+}
+.jfr-table tfoot td[data-col="footer-assets-sub1"] span, .jfr-table tfoot td[data-col="footer-assets-sub2"] span {
+  font-weight: 700;
+  font-size: calc(var(--fs) - 2px);
+}
+.jfr-table tfoot td[data-col="footer-assets-sub1"] {
+  padding-right: 0;
+  border-right: 0;
+  box-shadow: inset -1px 0 0 var(--c-line), inset 0 1px 0 var(--c-line);
+}
+
+/* ============================================================
+   13. ROW STATES
+   ============================================================ */
+@media (hover: hover) {
+  .jfr-table tbody tr.can-hover:hover td { background: var(--c-row-hover); }
+}
+.jfr-table tbody tr.can-hover:active td { background: var(--c-row-active); }
+.jfr-table tbody td { transition: background-color .12s ease; }
+.jfr-table tbody tr.can-hover:hover td:first-child {
+  box-shadow: inset 2px 0 0 #2563eb, inset 0 -1px 0 var(--c-line-soft);
+}
+
+/* ============================================================
+   14. RESPONSIVE
+   ============================================================ */
+@media (min-width: 480px) {
+  .jfr-table {
+    --fs: 12px;
+    --pad-x: 6px;
+    --no-w: 38px;
+    --size-w: 64px;
+    --status-w: 30px;
+  }
+}
+@media (min-width: 768px) {
+  .jfr-table {
+    --fs: 13px;
+    --pad-x: 8px;
+    --no-w: 46px;
+    --size-w: 75px;
+    --status-w: 41px;
+  }
+}
+
+.jfr-table tbody td[data-col="status"] .fa-solid {
+  font-size: calc(var(--fs) + 1px);
+}
+.jfr-table tbody { flex: 1 1 0; }
+</style>
+<style>
+:root{
+--panel:#5b6672;
+--border:#e4e4e7;
+--text:#fff;
+--muted:#71717a;
+}
+body{
+position:relative;
+}
+.jfr-overlay {
+  position: absolute;
+  z-index: 101;
+  background: rgba(37, 99, 235, .06);
+ border: 1px solid rgba(15, 23, 42, .45);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .15s ease;
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, .18),
+    0 6px 12px rgba(15, 23, 42, .14),
+    0 12px 24px rgba(15, 23, 42, .10),
+    inset 0 1px 0 rgba(255, 255, 255, .6);
+    top:50%;
+    transform: translateY(-50%);
+}
+.jfr-overlay.is-visible {
+  opacity: 1;
+}
+.jfr-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: rgba(15, 23, 42, .45);
+  opacity: 0;
+  transition: opacity .2s ease;
+  display: grid;
+place-items: center;
+}
+.jfr-backdrop.is-visible {
+opacity: 1;
+}
+.jfr-backdrop.is-visible {
+  opacity: 1;
+}
+
+.jfr-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, .25);
+  border-top-color: #ffffff;
+  animation: jfr-spin .8s linear infinite;
+}
+
+@keyframes jfr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Optional: only spin when visible, saves CPU when hidden */
+.jfr-backdrop:not(.is-fetching) .jfr-spinner {
+animation-play-state: paused;
+}
+
+table{
+z-index:0;
+}
+textarea{
+display:block;
+width:100%;
+padding:4px;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+font-size:11px;
+line-height:1.4;
+color:var(--text);
+background:var(--panel);
+border:1px solid var(--muted);
+border-radius:var(--r);
+outline:none;
+transition:border-color .15s ease,box-shadow .15s ease;
+resize:none;
+height:calc(100% - 30px);
+}
+textarea::placeholder{
+color:var(--border);
+opacity:.7
+}
+#paste-btn, #fetch-btn {
+  position: absolute;
+  z-index:102;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .55);
+  color: var(--c-title);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, .12),
+    0 2px 4px rgba(15, 23, 42, .06),
+    inset 0 1px 0 var(--c-header-sheen),
+    inset 0 0 0 1px rgba(15, 23, 42, .06);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter .12s ease, transform .04s ease;
+  height:26px;
+}
+#paste-btn:hover, #fetch-btn:hover {
+filter: brightness(1.06);
+background: rgba(255, 255, 255, .82);
+}
+</style>
+</head>
+<body>
+  <header>
+  <div class="logo" aria-hidden="true">
+  <i class="fa-solid fa-file-code"></i>
+</div>
+  <div class="title-group">
+    <span class="title">Table</span>
+    <span class="subtitle">31 rows</span>
+  </div>
+ 
+  <button type="button" class="header-btn ghost">
+  <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+  <span>Fetch</span>
+</button>
+</header>
+
+  <main>
+<table class="jfr-table">
+
+<thead>
+<tr data-row="0">
+  <th data-col="no" data-row="0" scope="col"><span>No.</span></th>
+  <th data-col="group1" data-row="0" scope="col"><span>CSS</span></th>
+  <th data-col="size" data-row="0" scope="col"><span>Size</span></th>
+  <th data-col="assets" data-row="0" scope="col"><span>Assets</span></th>
+  <th data-col="status" data-row="0" scope="col"><span>Status</span></th>
+</tr>
+<tr data-row="1">
+  <th data-col="no-spacer" data-row="1" aria-hidden="true"><span></span></th>
+  <th data-col="group1-spacer" data-row="1" aria-hidden="true"><span></span></th>
+  <th data-col="size-spacer" data-row="1" aria-hidden="true"><span></span></th>
+  <th data-col="assets-sub1" data-row="1" scope="col"><span>Total</span></th>
+  <th data-col="assets-sub2" data-row="1" scope="col"><span>Unique</span></th>
+  <th data-col="status-spacer" data-row="1" aria-hidden="true"><span></span></th>
+</tr>
+</thead>
+<tbody>
+  <tr data-row="1">
+    <td data-col="no" data-row="1"><span></span></td>
+    <td data-col="group1" data-row="1"><span></span></td>
+    <td data-col="size" data-row="1"><span></span></td>
+    <td data-col="assets-sub1" data-row="1"><span></span></td>
+    <td data-col="assets-sub2" data-row="1"><span></span></td>
+    <td data-col="status" data-row="1"><span></span></td>
+  </tr>
+  <tr data-row="2">
+    <td data-col="no" data-row="2"><span></span></td>
+    <td data-col="group1" data-row="2"><span></span></td>
+    <td data-col="size" data-row="2"><span></span></td>
+    <td data-col="assets-sub1" data-row="2"><span></span></td>
+    <td data-col="assets-sub2" data-row="2"><span></span></td>
+    <td data-col="status" data-row="2"><span></span></td>
+  </tr>
+  <tr data-row="3">
+    <td data-col="no" data-row="3"><span></span></td>
+    <td data-col="group1" data-row="3"><span></span></td>
+    <td data-col="size" data-row="3"><span></span></td>
+    <td data-col="assets-sub1" data-row="3"><span></span></td>
+    <td data-col="assets-sub2" data-row="3"><span></span></td>
+    <td data-col="status" data-row="3"><span></span></td>
+  </tr>
+  <tr data-row="4">
+    <td data-col="no" data-row="4"><span></span></td>
+    <td data-col="group1" data-row="4"><span></span></td>
+    <td data-col="size" data-row="4"><span></span></td>
+    <td data-col="assets-sub1" data-row="4"><span></span></td>
+    <td data-col="assets-sub2" data-row="4"><span></span></td>
+    <td data-col="status" data-row="4"><span></span></td>
+  </tr>
+  <tr data-row="5">
+    <td data-col="no" data-row="5"><span></span></td>
+    <td data-col="group1" data-row="5"><span></span></td>
+    <td data-col="size" data-row="5"><span></span></td>
+    <td data-col="assets-sub1" data-row="5"><span></span></td>
+    <td data-col="assets-sub2" data-row="5"><span></span></td>
+    <td data-col="status" data-row="5"><span></span></td>
+  </tr>
+  <tr data-row="6">
+    <td data-col="no" data-row="6"><span></span></td>
+    <td data-col="group1" data-row="6"><span></span></td>
+    <td data-col="size" data-row="6"><span></span></td>
+    <td data-col="assets-sub1" data-row="6"><span></span></td>
+    <td data-col="assets-sub2" data-row="6"><span></span></td>
+    <td data-col="status" data-row="6"><span></span></td>
+  </tr>
+  <tr data-row="7">
+    <td data-col="no" data-row="7"><span></span></td>
+    <td data-col="group1" data-row="7"><span></span></td>
+    <td data-col="size" data-row="7"><span></span></td>
+    <td data-col="assets-sub1" data-row="7"><span></span></td>
+    <td data-col="assets-sub2" data-row="7"><span></span></td>
+    <td data-col="status" data-row="7"><span></span></td>
+  </tr>
+  <tr data-row="8">
+    <td data-col="no" data-row="8"><span></span></td>
+    <td data-col="group1" data-row="8"><span></span></td>
+    <td data-col="size" data-row="8"><span></span></td>
+    <td data-col="assets-sub1" data-row="8"><span></span></td>
+    <td data-col="assets-sub2" data-row="8"><span></span></td>
+    <td data-col="status" data-row="8"><span></span></td>
+  </tr>
+  <tr data-row="9">
+    <td data-col="no" data-row="9"><span></span></td>
+    <td data-col="group1" data-row="9"><span></span></td>
+    <td data-col="size" data-row="9"><span></span></td>
+    <td data-col="assets-sub1" data-row="9"><span></span></td>
+    <td data-col="assets-sub2" data-row="9"><span></span></td>
+    <td data-col="status" data-row="9"><span></span></td>
+  </tr>
+  <tr data-row="10">
+    <td data-col="no" data-row="10"><span></span></td>
+    <td data-col="group1" data-row="10"><span></span></td>
+    <td data-col="size" data-row="10"><span></span></td>
+    <td data-col="assets-sub1" data-row="10"><span></span></td>
+    <td data-col="assets-sub2" data-row="10"><span></span></td>
+    <td data-col="status" data-row="10"><span></span></td>
+  </tr>
+  <tr data-row="11">
+    <td data-col="no" data-row="11"><span></span></td>
+    <td data-col="group1" data-row="11"><span></span></td>
+    <td data-col="size" data-row="11"><span></span></td>
+    <td data-col="assets-sub1" data-row="11"><span></span></td>
+    <td data-col="assets-sub2" data-row="11"><span></span></td>
+    <td data-col="status" data-row="11"><span></span></td>
+  </tr>
+  <tr data-row="12">
+    <td data-col="no" data-row="12"><span></span></td>
+    <td data-col="group1" data-row="12"><span></span></td>
+    <td data-col="size" data-row="12"><span></span></td>
+    <td data-col="assets-sub1" data-row="12"><span></span></td>
+    <td data-col="assets-sub2" data-row="12"><span></span></td>
+    <td data-col="status" data-row="12"><span></span></td>
+  </tr>
+  <tr data-row="13">
+    <td data-col="no" data-row="13"><span></span></td>
+    <td data-col="group1" data-row="13"><span></span></td>
+    <td data-col="size" data-row="13"><span></span></td>
+    <td data-col="assets-sub1" data-row="13"><span></span></td>
+    <td data-col="assets-sub2" data-row="13"><span></span></td>
+    <td data-col="status" data-row="13"><span></span></td>
+  </tr>
+  <tr data-row="14">
+    <td data-col="no" data-row="14"><span></span></td>
+    <td data-col="group1" data-row="14"><span></span></td>
+    <td data-col="size" data-row="14"><span></span></td>
+    <td data-col="assets-sub1" data-row="14"><span></span></td>
+    <td data-col="assets-sub2" data-row="14"><span></span></td>
+    <td data-col="status" data-row="14"><span></span></td>
+  </tr>
+  <tr data-row="15">
+    <td data-col="no" data-row="15"><span></span></td>
+    <td data-col="group1" data-row="15"><span></span></td>
+    <td data-col="size" data-row="15"><span></span></td>
+    <td data-col="assets-sub1" data-row="15"><span></span></td>
+    <td data-col="assets-sub2" data-row="15"><span></span></td>
+    <td data-col="status" data-row="15"><span></span></td>
+  </tr>
+  <tr data-row="16">
+    <td data-col="no" data-row="16"><span></span></td>
+    <td data-col="group1" data-row="16"><span></span></td>
+    <td data-col="size" data-row="16"><span></span></td>
+    <td data-col="assets-sub1" data-row="16"><span></span></td>
+    <td data-col="assets-sub2" data-row="16"><span></span></td>
+    <td data-col="status" data-row="16"><span></span></td>
+  </tr>
+  <tr data-row="17">
+    <td data-col="no" data-row="17"><span></span></td>
+    <td data-col="group1" data-row="17"><span></span></td>
+    <td data-col="size" data-row="17"><span></span></td>
+    <td data-col="assets-sub1" data-row="17"><span></span></td>
+    <td data-col="assets-sub2" data-row="17"><span></span></td>
+    <td data-col="status" data-row="17"><span></span></td>
+  </tr>
+  <tr data-row="18">
+    <td data-col="no" data-row="18"><span></span></td>
+    <td data-col="group1" data-row="18"><span></span></td>
+    <td data-col="size" data-row="18"><span></span></td>
+    <td data-col="assets-sub1" data-row="18"><span></span></td>
+    <td data-col="assets-sub2" data-row="18"><span></span></td>
+    <td data-col="status" data-row="18"><span></span></td>
+  </tr>
+  <tr data-row="19">
+    <td data-col="no" data-row="19"><span></span></td>
+    <td data-col="group1" data-row="19"><span></span></td>
+    <td data-col="size" data-row="19"><span></span></td>
+    <td data-col="assets-sub1" data-row="19"><span></span></td>
+    <td data-col="assets-sub2" data-row="19"><span></span></td>
+    <td data-col="status" data-row="19"><span></span></td>
+  </tr>
+  <tr data-row="20">
+    <td data-col="no" data-row="20"><span></span></td>
+    <td data-col="group1" data-row="20"><span></span></td>
+    <td data-col="size" data-row="20"><span></span></td>
+    <td data-col="assets-sub1" data-row="20"><span></span></td>
+    <td data-col="assets-sub2" data-row="20"><span></span></td>
+    <td data-col="status" data-row="20"><span></span></td>
+  </tr>
+  <tr data-row="21">
+    <td data-col="no" data-row="21"><span></span></td>
+    <td data-col="group1" data-row="21"><span></span></td>
+    <td data-col="size" data-row="21"><span></span></td>
+    <td data-col="assets-sub1" data-row="21"><span></span></td>
+    <td data-col="assets-sub2" data-row="21"><span></span></td>
+    <td data-col="status" data-row="21"><span></span></td>
+  </tr>
+  <tr data-row="22">
+    <td data-col="no" data-row="22"><span></span></td>
+    <td data-col="group1" data-row="22"><span></span></td>
+    <td data-col="size" data-row="22"><span></span></td>
+    <td data-col="assets-sub1" data-row="22"><span></span></td>
+    <td data-col="assets-sub2" data-row="22"><span></span></td>
+    <td data-col="status" data-row="22"><span></span></td>
+  </tr>
+  <tr data-row="23">
+    <td data-col="no" data-row="23"><span></span></td>
+    <td data-col="group1" data-row="23"><span></span></td>
+    <td data-col="size" data-row="23"><span></span></td>
+    <td data-col="assets-sub1" data-row="23"><span></span></td>
+    <td data-col="assets-sub2" data-row="23"><span></span></td>
+    <td data-col="status" data-row="23"><span></span></td>
+  </tr>
+  <tr data-row="24">
+    <td data-col="no" data-row="24"><span></span></td>
+    <td data-col="group1" data-row="24"><span></span></td>
+    <td data-col="size" data-row="24"><span></span></td>
+    <td data-col="assets-sub1" data-row="24"><span></span></td>
+    <td data-col="assets-sub2" data-row="24"><span></span></td>
+    <td data-col="status" data-row="24"><span></span></td>
+  </tr>
+  <tr data-row="25">
+    <td data-col="no" data-row="25"><span></span></td>
+    <td data-col="group1" data-row="25"><span></span></td>
+    <td data-col="size" data-row="25"><span></span></td>
+    <td data-col="assets-sub1" data-row="25"><span></span></td>
+    <td data-col="assets-sub2" data-row="25"><span></span></td>
+    <td data-col="status" data-row="25"><span></span></td>
+  </tr>
+  <tr data-row="26">
+    <td data-col="no" data-row="26"><span></span></td>
+    <td data-col="group1" data-row="26"><span></span></td>
+    <td data-col="size" data-row="26"><span></span></td>
+    <td data-col="assets-sub1" data-row="26"><span></span></td>
+    <td data-col="assets-sub2" data-row="26"><span></span></td>
+    <td data-col="status" data-row="26"><span></span></td>
+  </tr>
+  <tr data-row="27">
+    <td data-col="no" data-row="27"><span></span></td>
+    <td data-col="group1" data-row="27"><span></span></td>
+    <td data-col="size" data-row="27"><span></span></td>
+    <td data-col="assets-sub1" data-row="27"><span></span></td>
+    <td data-col="assets-sub2" data-row="27"><span></span></td>
+    <td data-col="status" data-row="27"><span></span></td>
+  </tr>
+  <tr data-row="28">
+    <td data-col="no" data-row="28"><span></span></td>
+    <td data-col="group1" data-row="28"><span></span></td>
+    <td data-col="size" data-row="28"><span></span></td>
+    <td data-col="assets-sub1" data-row="28"><span></span></td>
+    <td data-col="assets-sub2" data-row="28"><span></span></td>
+    <td data-col="status" data-row="28"><span></span></td>
+  </tr>
+  <tr data-row="29">
+    <td data-col="no" data-row="29"><span></span></td>
+    <td data-col="group1" data-row="29"><span></span></td>
+    <td data-col="size" data-row="29"><span></span></td>
+    <td data-col="assets-sub1" data-row="29"><span></span></td>
+    <td data-col="assets-sub2" data-row="29"><span></span></td>
+    <td data-col="status" data-row="29"><span></span></td>
+  </tr>
+  <tr data-row="30">
+    <td data-col="no" data-row="30"><span></span></td>
+    <td data-col="group1" data-row="30"><span></span></td>
+    <td data-col="size" data-row="30"><span></span></td>
+    <td data-col="assets-sub1" data-row="30"><span></span></td>
+    <td data-col="assets-sub2" data-row="30"><span></span></td>
+    <td data-col="status" data-row="30"><span></span></td>
+  </tr>
+  <tr data-row="31">
+    <td data-col="no" data-row="31"><span></span></td>
+    <td data-col="group1" data-row="31"><span></span></td>
+    <td data-col="size" data-row="31"><span></span></td>
+    <td data-col="assets-sub1" data-row="31"><span></span></td>
+    <td data-col="assets-sub2" data-row="31"><span></span></td>
+    <td data-col="status" data-row="31"><span></span></td>
+  </tr>
+</tbody>
+
+<tfoot>
+  <tr data-row="32">
+    <td data-col="footer-no" data-row="32"><span>Summary</span></td>
+    <td data-col="size" data-row="32"><span>235</span></td>
+    <td data-col="footer-assets-sub1" data-row="32"><span></span></td>
+    <td data-col="footer-assets-sub2" data-row="32"><span></span></td>
+    <td data-col="footer-status" data-row="32"><span></span></td>
+  </tr>
+</tfoot>
+</table>
+
+<div class="jfr-overlay" aria-hidden="true">
+<textarea id="multi-urls" spellcheck="false" autocapitalize="off" placeholder="https://a.com/reset.css
+https://b.com/theme.css" readonly></textarea>
+<button type="button" id="paste-btn">
+<i class="fa-solid fa-paste" aria-hidden="true"></i>
+<span>Paste</span>
+</button>
+<button type="button" id="fetch-btn">
+<i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+<span>Fetch</span>
+</button>
+</div>
+
+</main>
+
+  <footer>
+    <span>Footer</span>
+    <div class="clock" role="timer" aria-live="off">
+      <span id="clock-h">--</span><span class="clock-colon" id="clock-colon">:</span><span id="clock-m">--</span><span class="clock-meridiem" id="clock-meridiem">--</span>
+    </div>
+  </footer>
+  
+<div class="jfr-backdrop" aria-hidden="true">
+  <div class="jfr-spinner"></div>
+</div>
+
+<script>
+var tmp = [
+  "https://web.telegram.org/a/view-transitions.css",
+  "https://web.telegram.org/a/assets/InputText-Cj69WUze.css",
+  "https://web.telegram.org/a/assets/Transition-giLYO1y3.css",
+  "https://web.telegram.org/a/assets/Loading-CzX-7jrR.css",
+  "https://web.telegram.org/a/assets/usePrevious-DnHdxjhC.css",
+  "https://web.telegram.org/a/assets/wallpaperStorage-EsrHDrpR.css",
+  "https://web.telegram.org/a/assets/Checkbox-BGTxtSJ6.css",
+  "https://web.telegram.org/a/assets/DropdownMenu-Dcls08u0.css",
+  "https://web.telegram.org/a/assets/lock-CFec2QyT.css",
+  "https://web.telegram.org/a/assets/index-BY00Q9CC.css",
+  "https://web.telegram.org/a/assets/Modal-Dg5JqZy5.css",
+  "https://web.telegram.org/a/assets/FullNameTitle-CAP9TGpS.css",
+  "https://web.telegram.org/a/assets/resolveTransitionName-C5qWoAM-.css",
+  "https://web.telegram.org/a/assets/PickerSearchField-CVjV_yWJ.css",
+  "https://web.telegram.org/a/assets/Modal-CO70pn-e.css",
+  "https://web.telegram.org/a/assets/renderMessageText-DXNXPUjm.css",
+  "https://web.telegram.org/a/assets/FloatingActionButton--2DJCARP.css",
+  "https://web.telegram.org/a/assets/ListItem-tJ28LOsc.css",
+  "https://web.telegram.org/a/assets/CropModal-zYRJ34d1.css",
+  "https://web.telegram.org/a/assets/WalletAppIcon-CMXQZ1iA.css",
+  "https://web.telegram.org/a/assets/ActionMessage-BBgKSlpz.css",
+  "https://web.telegram.org/a/assets/useConnectionStatus-DMNjJT2y.css",
+  "https://web.telegram.org/a/assets/main-Dnd9P1GO.css",
+  "https://web.telegram.org/a/assets/calls-CQWZKTsy.css",
+  "https://web.telegram.org/a/assets/PasswordMonkey-DxAOTguB.css",
+  "https://web.telegram.org/a/assets/AvatarEditable-ci1VPugS.css",
+  "https://web.telegram.org/a/assets/messageCopy-BsX0xK2h.css",
+  "https://web.telegram.org/a/assets/CheckboxField-BIPQ_c7F.css",
+  "https://web.telegram.org/a/assets/TableInfo-B07coig7.css",
+  "https://web.telegram.org/a/assets/TransferBetweenPeers-DUQqIj4x.css",
+  "https://web.telegram.org/a/assets/extra-DitubbRR.css"
+];
+</script>
+
+<script>
+  (function () {
+    var hourEl     = document.getElementById('clock-h');
+    var minEl      = document.getElementById('clock-m');
+    var meridiemEl = document.getElementById('clock-meridiem');
+    var colonEl    = document.getElementById('clock-colon');
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function tick() {
+      var now = new Date();
+      var h = now.getHours();
+      var m = now.getMinutes();
+      var s = now.getSeconds();
+
+      hourEl.textContent     = pad(h % 12 || 12);
+      minEl.textContent      = pad(m);
+      meridiemEl.textContent = h >= 12 ? 'PM' : 'AM';
+
+      colonEl.style.visibility = (s % 2 === 0) ? 'visible' : 'hidden';
+    }
+
+    tick();
+
+    function schedule() {
+      setTimeout(function () {
+        tick();
+        schedule();
+      }, 1000 - (Date.now() % 1000));
+    }
+    schedule();
+
+
+function getFileName(url) {
+  // strips query/hash and returns the last path segment
+  return url.split(/[?#]/)[0].split("/").pop();
+}
+
+})();
+</script>
+<script >
+(function() {
+const ORIGIN = 'https://jfr-blob-db.vercel.app';
+const ENDPOINT = '/api/css-stats';
+
+const overlay = document.querySelector('.jfr-overlay');
+const fetchBtn = document.querySelector('#fetch-btn');
+const pasteBtn = document.querySelector('#paste-btn');
+const textarea = document.querySelector('#multi-urls');
+const main = document.querySelector('main');
+const thead = document.querySelector('.jfr-table thead');
+const tfoot = document.querySelector('.jfr-table tfoot');
+const leftCell = document.querySelector('.jfr-table tbody td[data-col="group1"]');
+const rightCell = document.querySelector('.jfr-table tbody td[data-col="status"]');
+const tbody = document.querySelector('.jfr-table tbody');
+//const tfoot = document.querySelector('.jfr-table tfoot');
+
+function formatBytes(bytes) {
+  if (bytes == null) {
+    return '';
+  }
+  if (bytes < 1000) {
+    return bytes + ' B';
+  }
+  if (bytes < 1000000) {
+    return (bytes / 1000).toFixed(0) + ' KB';
+  }
+  return (bytes / 1000000).toFixed(1) + ' MB';
+}
+
+function populateRows(tbody, response) {
+  const MAX = tbody.children.length;
+  const all = response.css || [];
+  const rows = all.length > MAX ? all.slice(0, MAX) : all;
+  if (all.length > MAX) {
+    console.warn(`populateRows: ${all.length} CSS files received, using first ${MAX}.`);
+  }
+  const STATUS = {
+    true: { icon: 'fa-solid fa-check', cls: 'is-ok' },
+    false: { icon: 'fa-solid fa-xmark', cls: 'is-error' },
+  };
+  [...tbody.children].forEach((tr, i) => {
+    const data = rows[i];
+    if (!data) {
+      return;
+    }
+    tr.classList.add('can-hover');
+    const cell = (col) => tr.querySelector(`td[data-col="${col}"] > span`);
+    const td = (col) => tr.querySelector(`td[data-col="${col}"]`);
+    const set = (col, value) => {
+      const s = cell(col);
+      if (s) {
+        s.textContent = value ?? '';
+      }
+    };
+    set('no', tr.dataset.row);
+    set('group1', data.filename || data.url || '');
+    set('size', formatBytes(data.bytes));
+    set('assets-sub1', data.assetCount);
+    set('assets-sub2', (data.assets || []).length);
+    
+    const statusSpan = cell('status');
+    const statusTd = td('status');
+    if (statusSpan) {
+      statusTd.classList.remove('is-ok', 'is-error');
+      const meta = STATUS[data.ok];
+      if (meta) {
+        statusSpan.innerHTML = `<i class="${meta.icon}" aria-hidden="true"></i>`;
+        statusTd.classList.add(meta.cls);
+      }
+    }
+  });
+  return rows.length;
+}
+
+function populateSummary(tfoot, summary, shownCount, totalCount) {
+  const td = (col) => tfoot.querySelector(`td[data-col="${col}"]`);
+  const set = (col, value) => {
+    const s = tfoot.querySelector(`td[data-col="${col}"] > span`);
+    if (s) {
+      s.textContent = value ?? '';
+    }
+  };
+  set('footer-no', `Summary (${shownCount} of ${totalCount})`);
+  set('size', formatBytes(summary.cssBytes));
+  set('footer-assets-sub1', summary.assetRefs);
+  set('footer-assets-sub2', summary.uniqueAssets);
+  
+  const statusTd = td('footer-status');
+  const statusSpan = tfoot.querySelector(`td[data-col="footer-status"] > span`);
+  if (statusTd && statusSpan) {
+    statusTd.classList.remove('is-ok', 'is-error');
+    const missing = summary.cssFiles - totalCount;
+    if (missing > 0) {
+      statusSpan.textContent = `${missing} missing`;
+      statusTd.classList.add('is-error');
+    } else if (summary.errors > 0) {
+      statusSpan.textContent = `${summary.errors} err`;
+      statusTd.classList.add('is-error');
+    } else {
+      statusSpan.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+      statusTd.classList.add('is-ok');
+    }
+  }
+  
+  const subtitle = document.querySelector('.subtitle');
+  if (subtitle) {
+    subtitle.textContent = `${shownCount} row${shownCount === 1 ? '' : 's'}`;
+  }
+}
+
+function positionOverlay() {
+  if (!overlay || !main || !thead || !tfoot || !leftCell || !rightCell) {
+    return;
+  }
+  
+  const pRect = main.getBoundingClientRect();
+  const tRect = thead.getBoundingClientRect();
+  const fRect = tfoot.getBoundingClientRect();
+  const lRect = leftCell.getBoundingClientRect();
+  const rRect = rightCell.getBoundingClientRect();
+  
+  //overlay.style.top = (tRect.bottom - pRect.top) + 'px';
+  overlay.style.left = (lRect.left - pRect.left) + 'px';
+  overlay.style.width = (rRect.left - lRect.left) + 'px';
+  //overlay.style.height = (fRect.top - tRect.bottom) + 'px';
+  overlay.style.height = (rRect.left - lRect.left) + 'px';
+  
+  fetchBtn.style.top = (rRect.left - lRect.left - 30) + 'px';
+  fetchBtn.style.right = (lRect.left) + 'px';
+  
+  pasteBtn.style.top = (rRect.left - lRect.left - 30) + 'px';
+  pasteBtn.style.left = (lRect.left - pRect.left) + 'px';
+}
+
+function showSpotlight() {
+  document.querySelector('.jfr-backdrop').classList.add('is-visible');
+  document.querySelector('.jfr-overlay').classList.add('is-visible');
+  positionOverlay();
+}
+
+function hideSpotlight() {
+  document.querySelector('.jfr-backdrop').classList.remove('is-visible');
+  document.querySelector('.jfr-overlay').classList.remove('is-visible');
+}
+
+window.addEventListener('resize', positionOverlay);
+window.addEventListener('load', positionOverlay);
+
+positionOverlay();
+fetchBtn.disabled = true;
+document.querySelector('.jfr-backdrop').classList.add('is-visible');
+document.querySelector('.jfr-overlay').classList.add('is-visible');
+
+fetchBtn.addEventListener('click', async () => {
+  const overlay = document.querySelector('.jfr-overlay');
+  const backdrop = document.querySelector('.jfr-backdrop');
+  
+  overlay.classList.remove('is-visible');
+  backdrop.classList.add('is-fetching');
+  
+  const ORIGIN = 'https://jfr-blob-db.vercel.app';
+  const ENDPOINT = '/api/css-stats';
+  
+  // ---- Normalize textarea value (inline, no helper needed) ----
+  let urls = [];
+  const raw = String(textarea.value || '').trim();
+  
+  if (raw) {
+    // 1) Try JSON array first (handles `[ "...", "..." ]` pastes)
+    let parsed = null;
+    if (raw.startsWith('[')) {
+      try { parsed = JSON.parse(raw); } catch (_) {}
+    }
+    
+    if (Array.isArray(parsed)) {
+      urls = parsed.map(u => String(u).trim()).filter(Boolean);
+    } else {
+      // 2) Loose split — strip brackets, quotes, commas
+      urls = raw
+        .split(/[\n,]+/)
+        .map(t => t
+          .trim()
+          .replace(/^[\s[]+/, '')
+          .replace(/[\s\]]+$/, '')
+          .replace(/^["'`]+|["'`]+$/g, '')
+          .trim()
+        )
+        .filter(Boolean);
+    }
+  }
+  
+  if (!urls.length) {
+    backdrop.classList.remove('is-fetching');
+    return showError('Paste at least one CSS URL.');
+  }
+  
+  // ---- POST ----
+  try {
+    const res = await fetch(ORIGIN + ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls })
+    });
+    
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    
+    renderStats(await res.json());
+    document.querySelector('.jfr-backdrop').classList.remove('is-visible');
+  } catch (err) {
+    console.error('css-stats error:', err);
+    showError(err.message || String(err));
+  } finally {
+    backdrop.classList.remove('is-fetching');
+  }
+});
+
+async function pasteFromClipboard() {
+  if (!navigator.clipboard || !navigator.clipboard.readText) {
+    throw new Error('Clipboard read not supported in this browser');
+  }
+  try {
+    return await navigator.clipboard.readText();
+  } catch (err) {
+    if (err.name === 'NotAllowedError') {
+      throw new Error('Clipboard permission denied — grant it and try again');
+    }
+    if (err.name === 'SecurityError') {
+      throw new Error('Clipboard access requires HTTPS or localhost');
+    }
+    throw new Error(`Clipboard read failed: ${err.message}`);
+  }
+}
+
+pasteBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  try {
+    const text = await pasteFromClipboard();
+textarea.value = text;
+fetchBtn.disabled = false;
+  } catch (err) {
+    // show error to user
+  }
+});
+
+function renderStats(response){
+const shown = populateRows(tbody, response);
+populateSummary(tfoot, response.summary, shown, response.css.length);
+}
+
+})();
+</script>
+
+
+<!--
+<script>
+(function() {
+const tbody = document.querySelector('.jfr-table tbody');
+const tfoot = document.querySelector('.jfr-table tfoot');
+
+function formatBytes(bytes) {
+  if (bytes == null) {
+    return '';
+  }
+  if (bytes < 1000) {
+    return bytes + ' B';
+  }
+  if (bytes < 1000000) {
+    return (bytes / 1000).toFixed(0) + ' KB';
+  }
+  return (bytes / 1000000).toFixed(1) + ' MB';
+}
+
+function populateRows(tbody, response) {
+  const MAX = tbody.children.length;
+  const all = response.css || [];
+  const rows = all.length > MAX ? all.slice(0, MAX) : all;
+  if (all.length > MAX) {
+    console.warn(`populateRows: ${all.length} CSS files received, using first ${MAX}.`);
+  }
+  const STATUS = {
+    true: { icon: 'fa-solid fa-check', cls: 'is-ok' },
+    false: { icon: 'fa-solid fa-xmark', cls: 'is-error' },
+  };
+  [...tbody.children].forEach((tr, i) => {
+    const data = rows[i];
+    if (!data) {
+      return;
+    }
+    tr.classList.add('can-hover');
+    const cell = (col) => tr.querySelector(`td[data-col="${col}"] > span`);
+    const td = (col) => tr.querySelector(`td[data-col="${col}"]`);
+    const set = (col, value) => {
+      const s = cell(col);
+      if (s) {
+        s.textContent = value ?? '';
+      }
+    };
+    set('no', tr.dataset.row);
+    set('group1', data.filename || data.url || '');
+    set('size', formatBytes(data.bytes));
+    set('assets-sub1', data.assetCount);
+    set('assets-sub2', (data.assets || []).length);
+    
+    const statusSpan = cell('status');
+    const statusTd = td('status');
+    if (statusSpan) {
+      statusTd.classList.remove('is-ok', 'is-error');
+      const meta = STATUS[data.ok];
+      if (meta) {
+        statusSpan.innerHTML = `<i class="${meta.icon}" aria-hidden="true"></i>`;
+        statusTd.classList.add(meta.cls);
+      }
+    }
+  });
+  return rows.length;
+}
+
+function populateSummary(tfoot, summary, shownCount, totalCount) {
+  const td = (col) => tfoot.querySelector(`td[data-col="${col}"]`);
+  const set = (col, value) => {
+    const s = tfoot.querySelector(`td[data-col="${col}"] > span`);
+    if (s) {
+      s.textContent = value ?? '';
+    }
+  };
+  set('footer-no', `Summary (${shownCount} of ${totalCount})`);
+  set('size', formatBytes(summary.cssBytes));
+  set('footer-assets-sub1', summary.assetRefs);
+  set('footer-assets-sub2', summary.uniqueAssets);
+  
+  const statusTd = td('footer-status');
+  const statusSpan = tfoot.querySelector(`td[data-col="footer-status"] > span`);
+  if (statusTd && statusSpan) {
+    statusTd.classList.remove('is-ok', 'is-error');
+    const missing = summary.cssFiles - totalCount;
+    if (missing > 0) {
+      statusSpan.textContent = `${missing} missing`;
+      statusTd.classList.add('is-error');
+    } else if (summary.errors > 0) {
+      statusSpan.textContent = `${summary.errors} err`;
+      statusTd.classList.add('is-error');
+    } else {
+      statusSpan.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+      statusTd.classList.add('is-ok');
+    }
+  }
+  
+  const subtitle = document.querySelector('.subtitle');
+  if (subtitle) {
+    subtitle.textContent = `${shownCount} row${shownCount === 1 ? '' : 's'}`;
+  }
+}
+
+const response = {
+  generatedAt: '2026-10-20T...',
+  summary: {
+    cssFiles: 28, cssFilesOk: 28, cssBytes: 412345,
+    assetRefs: 147, uniqueAssets: 63, assetBytes: 8912345,
+    assetBytesUnknown: 0, errors: 0, probeAssets: true,
+  },
+  css: [
+    {
+      ok: true,
+      url: 'https://web.telegram.org/a/assets/main-Dnd9P1GO.css',
+      finalUrl: 'https://web.telegram.org/a/assets/main-Dnd9P1GO.css',
+      filename: 'main-Dnd9P1GO.css',
+      bytes: 182345,
+      contentType: 'text/css',
+      assetCount: 12,
+      importCount: 0,
+      assetBytes: 1245678,
+      assetBytesUnknown: 0,
+      assets: [
+        { url: 'https://web.telegram.org/a/assets/fonts/…woff2', type: 'url', bytes: 56789, contentType: 'font/woff2', ok: true },
+      ],
+    },
+  ],
+  errors: [],
+};
+
+
+
+const btn = document.querySelector('.header-btn');
+btn.addEventListener('click', () => {
+const shown = populateRows(tbody, response);
+populateSummary(tfoot, response.summary, shown, response.css.length);
+});
+
+
+})();
+</script>
+-->
+<!--
+<script>
+ async function fetchCssReport() {
+  const res = await fetch('./response.json', { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function onFetchClick(e) {
+  const btn = e.currentTarget;
+  btn.classList.add('is-loading');
+  btn.disabled = true;
+  try {
+    const response = await fetchCssReport();
+    const shown = populateRows(tbody, response);
+    populateSummary(tfoot, response.summary, shown, response.css.length);
+  } catch (err) {
+    console.error('Fetch failed:', err);
+    const statusTd = tfoot.querySelector('td[data-col="footer-status"]');
+    const statusSpan = tfoot.querySelector('td[data-col="footer-status"] > span');
+    if (statusTd && statusSpan) {
+      statusTd.classList.remove('is-ok', 'is-error');
+      statusTd.classList.add('is-error');
+      statusSpan.textContent = 'fetch failed';
+    }
+  } finally {
+    btn.classList.remove('is-loading');
+    btn.disabled = false;
+  }
+}
+
+const tbody = document.querySelector('.jfr-table tbody');
+const tfoot = document.querySelector('.jfr-table tfoot');
+const btn = document.querySelector('.jfr-table .header-btn');
+btn.addEventListener('click', onFetchClick);
+</script>
+-->
+</body>
+</html>
